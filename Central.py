@@ -47,17 +47,66 @@ class ChargePoint(cp):
         )
 
     @on('Heartbeat')
-    async def on_heartbeat(self):
+    async def on_Heartbeat(self):
         return call_result.Heartbeat(
             current_time=datetime.utcnow().isoformat(),
         )
 
     @on('SetChargingProfile')
-    async def on_set_charging_profile(self, connector_id, cs_charging_profiles, **kwargs):
+    async def on_SetChargingProfile(self, connector_id, cs_charging_profiles, **kwargs):
         return call_result.SetChargingProfile(
             status='Accepted'
         )
 
+    @on('ClearChargingProfile')
+    async def on_ClearChargingProfile(self, **kwargs):
+        return call_result.ClearChargingProfile(
+            status='Accepted'
+        )
+
+    @on('GetConfiguration')
+    async def on_GetConfiguration(self, **kwargs):
+        # Configuration example
+        configuration = [
+            {
+                'key': 'ChargePointModel',
+                'readonly': True,
+                'value': 'Sample Model'
+            },
+            {
+                'key': 'ChargePointVendor',
+                'readonly': True,
+                'value': 'Sample Vendor'
+            },
+            {
+                'key': 'FirmwareVersion',
+                'readonly': True,
+                'value': '1.0.0'
+            },
+            {
+                'key': 'Connectivity',
+                'readonly': False,
+                'value': 'WiFi'
+            }
+        ] 
+        return call_result.GetConfiguration(
+            configuration_key=configuration
+        )
+
+    @on('ChangeConfiguration')
+    async def on_ChangeConfiguration(self, key, value, **kwargs):
+        # For simplicity, just log the configuration change request
+        print(f"ChangeConfiguration request received: key={key}, value={value}")
+
+        # Simulate applying the configuration change
+        if key in {'ChargePointModel', 'ChargePointVendor', 'FirmwareVersion'}:
+            status = 'Rejected'
+        else:
+            status = 'Accepted'
+
+        return call_result.ChangeConfiguration(
+            status=status
+        )
 
 async def on_connect(websocket, path):
     """For every new charge point that connects, create a ChargePoint

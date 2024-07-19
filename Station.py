@@ -58,6 +58,28 @@ class ChargePoint(cp):
         response = await self.call(request)
         print(response)
 
+    async def send_ClearChargingProfile(self, id, connector_id):
+        request = call.ClearChargingProfile(
+            id=id,
+            connector_id=connector_id
+        )
+        response = await self.call(request)
+        print(response)
+
+    async def send_GetConfiguration(self):
+        request = call.GetConfiguration(
+            # Provide configuration keys if needed
+        )
+        response = await self.call(request)
+        print(response)
+
+    async def send_ChangeConfiguration(self, key, value):
+        request = call.ChangeConfiguration(
+            key=key,
+            value=value
+        )
+        response = await self.call(request)
+        print(response)
 
 
 async def main():
@@ -109,6 +131,9 @@ async def main():
         cs_charging_profiles=cs_charging_profiles
     )
 
+    await cp.send_ClearChargingProfile(1, 1)
+    await cp.send_GetConfiguration()
+    await cp.send_ChangeConfiguration('Connectivity', 'Ethernet')
 
 
 if __name__ == "__main__":
