@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import asyncio
 import ssl
@@ -145,7 +145,8 @@ async def main():
     ssl_context.load_cert_chain(certfile='server.crt', keyfile='server.key')
 
     server = await websockets.serve(
-        on_connect, "0.0.0.0", 9000, subprotocols=["ocpp1.6"], ssl=ssl_context
+        on_connect, "0.0.0.0", 9000, subprotocols=["ocpp1.6"],
+        #ssl=ssl_context
     )
 
     logging.info("Server Started listening to new connections...")

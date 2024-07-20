@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import asyncio
 import logging
@@ -85,7 +85,9 @@ class ChargePoint(cp):
 async def main():
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     ssl_context.load_verify_locations('server.crt')
-    ws = await websockets.connect("wss://localhost:9000/CP_1", subprotocols=["ocpp1.6"], ssl=ssl_context)
+    ws = await websockets.connect("ws://localhost:9000/CP_1", subprotocols=["ocpp1.6"],
+        #ssl=ssl_context
+        )
 
     cp = ChargePoint("CP_1", ws)
     #await asyncio.gather(cp.start(), cp.send_BootNotification())
