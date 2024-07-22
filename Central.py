@@ -108,6 +108,14 @@ class ChargePoint(cp):
             status=status
         )
 
+    @on('StatusNotification')
+    async def on_StatusNotification(self, connector_id, error_code, status, **kwargs):
+        print(f"StatusNotification received: connector_id={connector_id}, error_code={error_code}, status={status}")
+        return call_result.StatusNotification()
+
+
+
+
 async def on_connect(websocket, path):
     """For every new charge point that connects, create a ChargePoint
     instance and start listening for messages.

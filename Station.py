@@ -81,6 +81,16 @@ class ChargePoint(cp):
         response = await self.call(request)
         print(response)
 
+    async def send_status_notification(self, connector_id, error_code, status):
+        request = call.StatusNotificationPayload(
+            connector_id=connector_id,
+            error_code=error_code,
+            status=status
+        )
+        response = await self.call(request)
+        print(response)
+
+
 
 async def main():
     #ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -136,7 +146,7 @@ async def main():
     await cp.send_ClearChargingProfile(1, 1)
     await cp.send_GetConfiguration()
     await cp.send_ChangeConfiguration('Connectivity', 'Ethernet')
-
+    await charge_point.send_status_notification(connector_id=1, error_code="NoError", status="Available")
 
 if __name__ == "__main__":
     asyncio.run(main())
