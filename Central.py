@@ -141,8 +141,8 @@ async def on_connect(websocket, path):
 
 
 async def main():
-    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    ssl_context.load_cert_chain(certfile='server.crt', keyfile='server.key')
+    #ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    #ssl_context.load_cert_chain(certfile='server.crt', keyfile='server.key')
 
     server = await websockets.serve(
         on_connect, "0.0.0.0", 9000, subprotocols=["ocpp1.6"],
