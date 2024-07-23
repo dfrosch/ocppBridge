@@ -7,7 +7,8 @@ venv:
 	./VENV.sh
 
 compile:
-	pyinstaller --onefile Central.py --name Central.x
+	pyinstaller --onefile Central.py --name Central.x --add-data ".venv/lib/python3.12/site-packages/ocpp/v16/schemas:ocpp/v16/schemas" \
+		--add-data ".venv/lib/python3.12/site-packages/ocpp/v201/schemas:ocpp/v201/schemas"
 
 build: dist/Central.x
 	sudo docker build -f $(DOCKFILE) -t $(IMAGE) .
