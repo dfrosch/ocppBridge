@@ -1,11 +1,10 @@
 DOCKFILE=./Dockerfile
 IMAGE=ocpp:1.0
 CONTAINER=ocppCentral
+NETW=--network host
 
 venv:
-	python3 -m venv .venv
-	source .venv/bin/activate
-	python3 -m pip install -r requirements.txt
+	./VENV.sh
 
 compile:
 	pyinstaller --onefile Central.py --name Central.x
@@ -15,10 +14,10 @@ build: dist/Central.x
 
 run:
 	-sudo docker kill $(CONTAINER)
-	sudo docker run --rm --name $(CONTAINER) $(IMAGE) &
+	sudo docker run --rm --name $(CONTAINER) $(NETW) $(IMAGE) &
 
 kill:
 	-sudo docker kill $(CONTAINER)
 
 clean:
-	-rm -r dist build
+	-rm -r dist build .venv
