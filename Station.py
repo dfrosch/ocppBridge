@@ -82,7 +82,7 @@ class ChargePoint(cp):
         print(response)
 
     async def send_status_notification(self, connector_id, error_code, status):
-        request = call.StatusNotificationPayload(
+        request = call.StatusNotification(
             connector_id=connector_id,
             error_code=error_code,
             status=status
@@ -146,7 +146,7 @@ async def main():
     await cp.send_ClearChargingProfile(1, 1)
     await cp.send_GetConfiguration()
     await cp.send_ChangeConfiguration('Connectivity', 'Ethernet')
-    await charge_point.send_status_notification(connector_id=1, error_code="NoError", status="Available")
+    await cp.send_status_notification(connector_id=1, error_code="NoError", status="Available")
 
 if __name__ == "__main__":
     asyncio.run(main())

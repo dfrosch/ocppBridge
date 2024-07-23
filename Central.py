@@ -12,9 +12,16 @@ from ocpp.v16.enums import Action, RegistrationStatus
 
 logging.basicConfig(level=logging.INFO)
 
+'''
+Because pyinstaller don't get subdir v16/schemas, w've got this error :
+    FileNotFoundError: [Errno 2] No such file or directory: '/tmp/_MEI6dFW9L/ocpp/v16/schemas/GetConfiguration.json'
+Solution is to set skip_schema_validation=True
+'''
+
+SkipShemVal=True
 
 class ChargePoint(cp):
-    @on('BootNotification')
+    @on('BootNotification', skip_schema_validation=SkipShemVal)
     def on_BootNotification(self, charge_point_vendor: str, charge_point_model: str, **kwargs):
         return call_result.BootNotification(
             current_time=datetime.utcnow().isoformat(),
@@ -22,7 +29,7 @@ class ChargePoint(cp):
             status=RegistrationStatus.accepted,
         )
 
-    @on('Authorize')
+    @on('Authorize', skip_schema_validation=SkipShemVal)
     async def on_Authorize(self, id_tag, **kwargs):
         return call_result.Authorize(
             id_tag_info={
@@ -30,7 +37,7 @@ class ChargePoint(cp):
             }
         )
 
-    @on('StartTransaction')
+    @on('StartTransaction', skip_schema_validation=SkipShemVal)
     async def on_StartTransaction(self, connector_id, id_tag, meter_start, timestamp, **kwargs):
         return call_result.StartTransaction(
             transaction_id=1,
@@ -38,7 +45,7 @@ class ChargePoint(cp):
                 'status': 'Accepted'
             }
         )
-    @on('StopTransaction')
+    @on('StopTransaction', skip_schema_validation=SkipShemVal)
     async def on_StopTransaction(self, meter_stop, timestamp, transaction_id, **kwargs):
         return call_result.StopTransaction(
             id_tag_info={
@@ -46,25 +53,25 @@ class ChargePoint(cp):
             }
         )
 
-    @on('Heartbeat')
+    @on('Heartbeat', skip_schema_validation=SkipShemVal)
     async def on_Heartbeat(self):
         return call_result.Heartbeat(
             current_time=datetime.utcnow().isoformat(),
         )
 
-    @on('SetChargingProfile')
+    @on('SetChargingProfile', skip_schema_validation=SkipShemVal)
     async def on_SetChargingProfile(self, connector_id, cs_charging_profiles, **kwargs):
         return call_result.SetChargingProfile(
             status='Accepted'
         )
 
-    @on('ClearChargingProfile')
+    @on('ClearChargingProfile', skip_schema_validation=SkipShemVal)
     async def on_ClearChargingProfile(self, **kwargs):
         return call_result.ClearChargingProfile(
             status='Accepted'
         )
 
-    @on('GetConfiguration')
+    @on('GetConfiguration', skip_schema_validation=SkipShemVal)
     async def on_GetConfiguration(self, **kwargs):
         # Configuration example
         configuration = [
@@ -93,7 +100,7 @@ class ChargePoint(cp):
             configuration_key=configuration
         )
 
-    @on('ChangeConfiguration')
+    @on('ChangeConfiguration', skip_schema_validation=SkipShemVal)
     async def on_ChangeConfiguration(self, key, value, **kwargs):
         # For simplicity, just log the configuration change request
         print(f"ChangeConfiguration request received: key={key}, value={value}")
@@ -108,7 +115,7 @@ class ChargePoint(cp):
             status=status
         )
 
-    @on('StatusNotification')
+    @on('StatusNotification', skip_schema_validation=SkipShemVal)
     async def on_StatusNotification(self, connector_id, error_code, status, **kwargs):
         print(f"StatusNotification received: connector_id={connector_id}, error_code={error_code}, status={status}")
         return call_result.StatusNotification()
