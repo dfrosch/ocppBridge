@@ -1,0 +1,20 @@
+# Étape 1 : builder avec une debian
+FROM debian:12-slim AS build
+RUN apt-get update && apt-get install -y python3
+RUN apt-get install -y libz1
+RUN apt install -y python3.11-venv
+RUN apt install -y pip
+COPY requirements.txt Central.py /
+RUN python3 -m venv .venv
+RUN . .venv/bin/activate && python3 -m pip install -r /requirements.txt && \
+	pyinstaller --onefile Central.py --name Central.x --add-data ".venv/lib/python3.11/site-packages/ocpp/v16/schemas:ocpp/v16/schemas" \
+	--add-data ".venv/lib/python3.11/site-packages/ocpp/v201/schemas:ocpp/v201/schemas"
+
+RUN mkdir /importlibs && cp /lib/x86_64-linux-gnu/libz.so.* /importlibs/
+
+# Étape 2 : Utiliser une image distroless comme image finale
+FROM gcr.io/distroless/base-debian12
+COPY --from=build /importlibs/ /lib/
+COPY --from=build dist/Central.x /app/Central.x
+WORKDIR /app
+ENTRYPOINT ["./Central.x"]
