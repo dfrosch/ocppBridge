@@ -19,4 +19,30 @@
 ```sh
 git clone https://github.com/dfrosch/ocppBridge.git
 cd ocppBridge
+```
 
+## Developement
+
+### Creation Virtual Environement and run the Central
+```sh
+make venv
+python3 ./Central.py
+```
+
+### Test the Central
+```sh
+python3 ./Station.py
+```
+
+## Distribution
+
+### Create a Docker image
+```sh
+make buildx
+```
+
+
+### Run the Docker image
+```sh
+make run
+```
