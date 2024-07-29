@@ -1,20 +1,42 @@
 # Étape 1 : builder avec une debian
 FROM debian:12-slim AS build
-RUN apt-get update && apt-get install -y python3
-RUN apt-get install -y libz1
-RUN apt install -y python3.11-venv
-RUN apt install -y pip
-COPY requirements.txt Central.py /
-RUN python3 -m venv .venv
-RUN . .venv/bin/activate && python3 -m pip install -r /requirements.txt && \
-	pyinstaller --onefile Central.py --name Central.x --add-data ".venv/lib/python3.11/site-packages/ocpp/v16/schemas:ocpp/v16/schemas" \
-	--add-data ".venv/lib/python3.11/site-packages/ocpp/v201/schemas:ocpp/v201/schemas"
 
+# Installer python3, venv, pip et libz en une seule commande RUN
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-venv \
+    python3-pip \
+    libz1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copier les fichiers nécessaires
+COPY requirements.txt Central.py /
+
+# Créer un environnement virtuel et installer les dépendances
+RUN python3 -m venv /venv \
+    && . /venv/bin/activate \
+    && python3 -m pip install -r /requirements.txt
+
+# Construire l'exécutable avec PyInstaller
+RUN . /venv/bin/activate \
+    && pyinstaller --onefile Central.py --name Central.x \
+        --add-data "/venv/lib/python3.*/site-packages/ocpp/v16/schemas:ocpp/v16/schemas" \
+        --add-data "/venv/lib/python3.*/site-packages/ocpp/v201/schemas:ocpp/v201/schemas"
+
+# Copier les bibliothèques nécessaires dans un répertoire temporaire
 RUN mkdir /importlibs && cp /lib/x86_64-linux-gnu/libz.so.* /importlibs/
 
 # Étape 2 : Utiliser une image distroless comme image finale
 FROM gcr.io/distroless/base-debian12
+
+# Copier les bibliothèques et l'exécutable de l'étape de build
 COPY --from=build /importlibs/ /lib/
-COPY --from=build dist/Central.x /app/Central.x
+COPY --from=build /dist/Central.x /app/Central.x
+
+# Définir le répertoire de travail
 WORKDIR /app
+
+# Définir le point d'entrée
 ENTRYPOINT ["./Central.x"]
+
