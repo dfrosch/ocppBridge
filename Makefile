@@ -15,20 +15,23 @@ compile:
 		--add-data ".venv/lib/python3.12/site-packages/ocpp/v201/schemas:ocpp/v201/schemas"
 
 buildx:
-	sudo docker build -f $(DOCKFILE) -t $(IMAGE) .
+	docker build -f $(DOCKFILE) -t $(IMAGE) .
 
 run:
-	-sudo docker kill $(CONTAINER)
-	sudo docker run --rm --name $(CONTAINER) $(NETW) $(IMAGE) &
-	sudo docker ps
+	-docker kill $(CONTAINER)
+	docker run --rm --name $(CONTAINER) $(NETW) $(IMAGE) &
+	docker ps
 
 kill:
-	-sudo docker kill $(CONTAINER)
+	-docker kill $(CONTAINER)
 
 clean:
 	-rm -r dist build .venv
 
 inspect:
-	sudo docker create --name="tmp" $(IMAGE)
-	sudo docker export tmp | tar t
-	sudo docker rm tmp
+	docker create --name="tmp" $(IMAGE)
+	docker export tmp | tar t
+	docker rm tmp
+
+logs:
+	docker logs -f $(CONTAINER)
