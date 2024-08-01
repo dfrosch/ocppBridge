@@ -19,7 +19,9 @@ buildx:
 
 run:
 	-docker kill $(CONTAINER)
+	sleep 2
 	docker run --rm --name $(CONTAINER) $(NETW) $(IMAGE) &
+	sleep 2
 	docker ps
 
 kill:
