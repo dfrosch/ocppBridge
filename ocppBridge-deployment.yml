@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ocppbridge-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: Central.x
+  template:
+    metadata:
+      labels:
+        app: Central.x
+    spec:
+      containers:
+      - name: ocppdebian
+        image: ocppdebian:1.0
+        ports:
+        - containerPort: 9000
+

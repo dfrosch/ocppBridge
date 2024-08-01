@@ -5,7 +5,8 @@ DOCKFILE=./Dockerfile.distroless
 IMAGE=ocppdebian:1.0
 
 CONTAINER=ocppCentral
-NETW=--network host
+#NETW=--network host
+NETW=-p 9000:9000
 
 venv:
 	./VENV.sh
@@ -37,3 +38,10 @@ inspect:
 
 logs:
 	docker logs -f $(CONTAINER)
+
+# Kubernetes minikub deployment
+deploy:
+	eval $(minikube -p minikube docker-env)
+	docker build -f $(DOCKFILE) -t $(IMAGE) .
+	kubectl apply -f ocppBridge-deployment.yml
+	kubectl expose deployment ocppbridge-deployment --type=NodePort --port=9000
