@@ -5,6 +5,7 @@ import ssl
 import logging
 from datetime import datetime
 import websockets
+import base64
 from ocpp.routing import on
 from ocpp.v16 import ChargePoint as cp
 from ocpp.v16 import call_result
@@ -122,9 +123,21 @@ async def on_connect(websocket, path):
     instance and start listening for messages.
     """
     try:
+        auth = websocket.request_headers["Authorization"]
+        if not auth:
+            raise ValueError('Missing Authorization header')
+        if not 'Basic ' in auth:
+            raise ValueError('Invalid Authorization header format')
+        logging.info(f'Authorization {auth}')
+        decoded_bytes = base64.b64decode(auth[6:])
+        decoded_string = decoded_bytes.decode("utf-8")
+        user, password = decoded_string.split(":")
+        logging.info(f' Authorization {user} {password}')
         requested_protocols = websocket.request_headers["Sec-WebSocket-Protocol"]
-    except KeyError:
-        logging.error("Client hasn't requested any Subprotocol. Closing Connection")
+    except KeyError as e:
+        logging.error(f'{e}')
+        return await websocket.close()
+    except ValueError:
         return await websocket.close()
     if websocket.subprotocol:
         logging.info("Protocols Matched: %s", websocket.subprotocol)
