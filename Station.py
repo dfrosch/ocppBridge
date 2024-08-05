@@ -91,12 +91,17 @@ class ChargePoint(cp):
         print(response)
 
 
+_ssl = False
 
 async def main():
-    #ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    #ssl_context.load_verify_locations('server.crt')
-    ws = await websockets.connect("ws://127.0.0.1:9000/CP_1", subprotocols=["ocpp1.6"],
-        #ssl=ssl_context
+    ssl_context = None
+    if _ssl:
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        ssl_context.load_verify_locations('server.crt')
+        ssl_context.check_hostname = False
+
+    ws = await websockets.connect("wss://USER:PASSWD@127.0.0.1:9000/CP_1", subprotocols=["ocpp1.6"],
+        ssl=ssl_context
         )
 
     cp = ChargePoint("CP_1", ws)

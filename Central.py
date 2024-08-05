@@ -20,7 +20,7 @@ class ChargePoint(cp):
     def on_BootNotification(self, charge_point_vendor: str, charge_point_model: str, **kwargs):
         return call_result.BootNotification(
             current_time=datetime.utcnow().isoformat(),
-            interval=10,
+            interval=60,
             status=RegistrationStatus.accepted,
         )
 
@@ -161,17 +161,20 @@ async def on_connect(websocket, path):
     except:
         logging.debug('Station has closed the connexion')
 
+_ssl = False
 
 async def main():
-    #ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    #ssl_context.load_cert_chain(certfile='server.crt', keyfile='server.key')
+    ssl_context = None
+    if _ssl:
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ssl_context.load_cert_chain(certfile='server.crt', keyfile='server.key')
 
     server = await websockets.serve(
         on_connect, "0.0.0.0", 9000, subprotocols=["ocpp1.6"],
-        #ssl=ssl_context
+        ssl=ssl_context
     )
 
-    logging.info("Server Started listening to new connections...")
+    logging.info(f'Server Started listening to new connections (ssl={_ssl})')
     await server.wait_closed()
 
 
