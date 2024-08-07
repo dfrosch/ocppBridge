@@ -11,6 +11,8 @@ from ocpp.v16.enums import RegistrationStatus
 
 logging.basicConfig(level=logging.INFO)
 
+_URL = "ws://10.98.182.8:32030/CP_1"
+
 class ChargePoint(cp):
     async def send_BootNotification(self):
         request = call.BootNotification(

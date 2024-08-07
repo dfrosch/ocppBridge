@@ -43,5 +43,6 @@ logs:
 deploy:
 	eval $(minikube -p minikube docker-env)
 	docker build -f $(DOCKFILE) -t $(IMAGE) .
-	kubectl apply -f ocppBridge-deployment.yml
-	kubectl expose deployment ocppbridge-deployment --type=NodePort --port=9000
+	kubectl apply -f ocpp-bridge-deployment.yml
+	kubectl delete service ocpp-bridge-deployment
+	kubectl expose deployment ocpp-bridge-deployment --type=NodePort --port=9000 --target-port=9000
